@@ -1,0 +1,14 @@
+// src/App.test.js
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+// Mock window.location for React Router
+Object.defineProperty(window, 'location', {
+  value: { pathname: '/' }
+});
+
+test('renders login component', () => {
+  render(<App />);
+  const loginElement = screen.getByText(/login/i);
+  expect(loginElement).toBeInTheDocument();
+});
