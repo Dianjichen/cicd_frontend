@@ -5,6 +5,5 @@ test('renders login link', () => {
   // render(<App />);
   // const linkElement = screen.getByText(/login/i);
   // expect(linkElement).toBeInTheDocument();
-  console.log("App.test.js [v]");
 });
 
