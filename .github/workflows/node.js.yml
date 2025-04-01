@@ -38,9 +38,8 @@ jobs:
       # build the react app
       - name: Build
         run: |
-         CI=''npm run build
-        
+          CI='' npm run build
+
       # test the react app
       - name: Test
         run: npm test
- 
