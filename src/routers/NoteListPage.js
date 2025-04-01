@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-// import NoteList from "../component/NoteList";
+//import NoteList from "../component/NoteList";
 import {Button, Container, Navbar} from "react-bootstrap";
 import LogoutBtn from "../components/LogoutBtn";
+
 
 const NoteListPage = () => {
 
