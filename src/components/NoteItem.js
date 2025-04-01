@@ -24,12 +24,12 @@ function NoteItem(props) {
                         >
                             Update
                         </Button>
-                        {/*<Button*/}
-                        {/*    variant="danger"*/}
-                        {/*    onClick={() => onDelete(note.id)}*/}
-                        {/*>*/}
-                        {/*    Delete*/}
-                        {/*</Button>*/}
+                        <Button
+                            variant="danger"
+                            onClick={() => onDelete(note.id)}
+                        >
+                            Delete
+                        </Button>
                     </div>
                 </div>
 
