@@ -83,26 +83,16 @@ const NoteList = ({notes}) => {
                         <Col md={4} key={index}>
                             <h4 className="text-center">{category}</h4>
                             <div className="kanban-column p-2 rounded" style={{minHeight: "300px"}}>
-                                {/*{noteList*/}
-                                {/*    // .filter(note => note.category === category)*/}
-                                {/*    .map((note) => (*/}
-                                {/*        <NoteItem*/}
-                                {/*            key={note.id}*/}
-                                {/*            note={note}*/}
-                                {/*            onUpdate={() => clickUpdateHandler(note)}*/}
-                                {/*            onDelete={onDelete}*/}
-                                {/*        />*/}
-                                {/*    ))}               */}
-
-                                {
-                                        noteList.length > 0 && <NoteItem
-                                            key={noteList[0].id}
-                                            note={noteList[0]}
-                                            onUpdate={() => clickUpdateHandler(noteList[0])}
+                                {noteList
+                                    // .filter(note => note.category === category)
+                                    .map((note) => (
+                                        <NoteItem
+                                            key={note.id}
+                                            note={note}
+                                            onUpdate={() => clickUpdateHandler(note)}
                                             onDelete={onDelete}
                                         />
-                                }
-
+                                    ))}
                             </div>
                         </Col>
                     ))}
@@ -121,3 +111,4 @@ const NoteList = ({notes}) => {
 ;
 
 export default NoteList;
+ 
