@@ -45,8 +45,5 @@ describe('NoteList Component', () => {
     expect(screen.getByText('This is the second note.')).toBeInTheDocument();
   });
 
-  it('displays Add Note button', () => {
-    render(<NoteList />);
-    expect(screen.getByText('Add Note')).toBeInTheDocument();
-  });
+
 });

@@ -50,4 +50,3 @@ describe('NoteList Component', () => {
     expect(screen.getByText('Add Note')).toBeInTheDocument();
   });
 });
- 
