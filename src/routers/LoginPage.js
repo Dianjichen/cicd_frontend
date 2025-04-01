@@ -1,87 +1,172 @@
-import React from 'react';
-import {render, screen, fireEvent, waitFor} from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import LoginPage from './LoginPage';
+import React, {useEffect, useState} from 'react';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import {Form, Row, Col, Container} from 'react-bootstrap';
 import axios from 'axios';
+import SERVER_URL from "../constants/server";
 
-// Mock axios
-jest.mock('axios');
+const LoginPage = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [mode, setMode] = useState('login');
 
-describe('LoginPage Register', () => {
-    beforeEach(() => {
-        localStorage.clear();
-        delete window.location;
-        window.location = {href: ''};
-    });
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if(!!token) {
+            window.location.href = '/noteList';
+        }
+    }, []);
 
-    test('registers a user and sends correct request', async () => {
-        axios.request.mockResolvedValueOnce({data: {message: 'Registered'}});
+    const handleEmailChange = (e) => {
+        setUsername(e.target.value);
+    };
 
-        render(<LoginPage/>);
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+    };
 
-        // Switch to register mode
-        const signUpButton = screen.getByRole('button', {name: /sign up/i});
-        fireEvent.click(signUpButton);
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-        // Fill the form
-        const usernameInput = screen.getByLabelText(/username/i);
-        const passwordInputs = screen.getAllByLabelText(/password/i);
-        const passwordInput = passwordInputs[0];
-        const confirmPasswordInput = passwordInputs[1];
+        let data = {
+            "username": username,
+            "password": password
+        };
 
-        await userEvent.type(usernameInput, 'newuser');
-        await userEvent.type(passwordInput, 'password123');
-        await userEvent.type(confirmPasswordInput, 'password123');
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${SERVER_URL}/user/login/`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: data
+        };
 
-        const registerButton = screen.getByRole('button', {name: /register/i});
-        fireEvent.click(registerButton);
+        axios.request(config)
+            .then((response) => {
+                const token = response.data.token;
+                if(!token){
+                    console.log("No token");
+                    return;
+                }
 
-        // Assert axios call
-        await waitFor(() => {
-            expect(axios.request).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    method: 'post',
-                    url: expect.stringContaining('/user/register/'),
-                    data: {
-                        username: 'newuser',
-                        password: 'password123'
-                    }
-                })
-            );
-        });
-    });
+                localStorage.setItem('token', token);
+                window.location.href = '/noteList';
+            })
+            .catch((error) => {
+                localStorage.setItem('token', "");
+                console.log(error);
+            });
 
-    test('logins a user and sends correct request', async () => {
-        axios.request.mockResolvedValueOnce({data: {token: 'token123'}});
+    };
 
-        render(<LoginPage/>);
+    const toggleMode = () => {
+        setMode(mode === 'login' ? 'register' : 'login');
+        setUsername('');
+        setPassword('');
+    };
 
-        // Fill the form
-        const usernameInput = screen.getByLabelText(/username/i);
-        const passwordInput = screen.getByLabelText(/password/i);
+    const handleClickRegister = () => {
+        // Handle registration logic here
 
-        await userEvent.type(usernameInput, 'existinguser');
-        await userEvent.type(passwordInput, 'password123');
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${SERVER_URL}/user/register/`,
+            headers: {},
+            data: {
+                username: username,
+                password: password
+            }
+        };
 
-        const loginButton = screen.getByRole('button', {name: /login/i});
-        fireEvent.click(loginButton);
+        axios.request(config)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
 
-        // Assert axios call
-        await waitFor(() => {
-            expect(axios.request).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    method: 'post',
-                    url: expect.stringContaining('/user/login/'),
-                    data: {
-                        username: 'existinguser',
-                        password: 'password123'
-                    }
-                })
-            );
+    };
 
-        });
+    return (
+        <Container className="d-flex justify-content-center align-items-center vh-100">
+            <Card style={{
+                width: "35rem",
+                padding: "2rem",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: "10px"
+            }}>
+                <Card.Body>
+                    <Card.Title className="text-center mb-4"
+                                style={{fontSize: "1.5rem", fontWeight: "bold"}}>Login</Card.Title>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column sm="4">Username</Form.Label>
+                            <Col sm="8">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="tesetid"
+                                    onChange={handleEmailChange}
+                                    value={username}
+                                    aria-label="username"
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column sm="4">Password</Form.Label>
+                            <Col sm="8">
+                                <Form.Control
+                                    type="password"
+                                    placeholder="••••••••"
+                                    onChange={handlePasswordChange}
+                                    value={password}
+                                    aria-label="password"
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+                        {
+                            mode === "register" && (
+                                <Form.Group as={Row} className="mb-3">
+                                    <Form.Label column sm="4">Confirm Password</Form.Label>
+                                    <Col sm="8">
+                                        <Form.Control
+                                            type="password"
+                                            placeholder="••••••••"
+                                            aria-label="confirm-password"
+                                            required
+                                        />
+                                    </Col>
+                                </Form.Group>
+                            )
+                        }
+                        {
+                            mode === "login" && (
+                                <div className="d-flex justify-content-center mt-4">
+                                    <Button variant="outline-primary" className="w-45 mx-1" onClick={toggleMode}>Sign
+                                        Up</Button>
+                                    <Button variant="primary" className="w-45 mx-1"
+                                            type={"submit"}>Login</Button>
+                                </div>
+                            )
+                        }
+                        {
+                            mode === "register" && (
+                                <div className="d-flex justify-content-center mt-4">
+                                    <Button variant="outline-primary" className="w-45 mx-1"
+                                            onClick={handleClickRegister}>Register</Button>
+                                </div>
+                            )
+                        }
+                    </Form>
+                </Card.Body>
+            </Card>
+        </Container>
+    );
+};
 
-        // Assert token is stored in localStorage
-        expect(localStorage.getItem('token')).toBe('token123');
-    });
-});
+export default LoginPage;
