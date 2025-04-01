@@ -27,25 +27,3 @@ describe('NoteItem', () => {
     expect(mockOnUpdate).toHaveBeenCalledWith(mockNote);
   });
 });
-
-describe('NoteItem Delete', () => {
-  const mockNote = {
-    id: 1,
-    title: 'Sample Title',
-    content: 'Sample Content'
-  };
-
-  it('calls onDelete with the correct note ID when Delete button is clicked', () => {
-    const mockOnDelete = jest.fn();
-
-    render(
-      <NoteItem note={mockNote} onDelete={mockOnDelete} onUpdate={() => {}} />
-    );
-
-    // Click the Delete button
-    fireEvent.click(screen.getByText('Delete'));
-
-    // Check if onDelete was called with the correct ID
-    expect(mockOnDelete).toHaveBeenCalledWith(mockNote.id);
-  });
-});
